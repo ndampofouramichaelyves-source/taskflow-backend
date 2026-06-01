@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TaskFlow</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: #f0f2ff;
+        color: #1a1a2e;
+        min-height: 100vh;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: #635bff !important;
+        box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.15) !important;
+      }
+
+      input::placeholder,
+      textarea::placeholder {
+        color: #b0b4cc;
+      }
+
+      select option {
+        background: #fff;
+        color: #1a1a2e;
+      }
+
+      * {
+        transition:
+          box-shadow 0.2s,
+          border-color 0.2s;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
