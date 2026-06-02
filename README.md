@@ -1,54 +1,107 @@
-# TaskFlow — Application Full-Stack
+# TaskFlow — Application ajoute du back end a celle du front end precedent 
 
-Application de gestion de tâches avec React (client) et Node.js/Express/MongoDB (serveur).
+> TP Réalisé par NDAM POFOURA MICHAEL 
 
-## Structure du projet
+
+Application de gestion de tâches développée en architecture **Full-Stack** :  
+un front-end **React/Vite** communiquant avec un back-end **Node.js/Express/MongoDB** via une API REST.
+
+---
+
+## Architecture complète du projet
 
 ```
-taskflow-backend/
-├── client/          → Front-End React (Vite)
-├── server/          → Back-End Node.js / Express / MongoDB
-└── README.md
+taskflow-backend/                        ← Racine du dépôt Git
+│
+├── .gitignore                           ← Fichiers exclus du dépôt (node_modules, .env)
+├── README.md                            ← Ce fichier
+│
+├── client/                               ← FRONT-END React avec vite (ce dossier est exactement celui de taskflow-frontend  │   │                                      avec des modifications exigés)
+│   │
+│   └── src/
+│       ├── main.jsx                     ← Point d'entrée React (monte <App />)
+│       ├── App.jsx                      ← Routeur principal (BrowserRouter + Routes)
+│       │
+│       ├── layouts/
+│       │   └── Navbar.jsx               ← Barre de navigation (logo + titre)
+│       │
+│       ├── components/
+│       │   ├── TaskCard.jsx             ← Carte d'affichage d'une tâche
+│       │   └── TaskForm.jsx             ← Formulaire d'ajout de tâche
+│       │
+│       ├── hooks/
+│       │   └── useLocalStorage.js       ← (ancien hook — remplacé par fetch API)
+│       │
+│       └── pages/
+│           ├── Dashboard.jsx            ← Page principale : liste + ajout de tâches
+│           │                              (Jalon 5 : useEffect + fetch GET/POST)
+│           └── TaskDetail.jsx           ← Page détail d'une tâche
+│                                          (Jalon 5 : fetch GET /api/tasks/:id)
+│
+└── server/                              ← BACK-END Node.js / Express / MongoDB
+    │
+    ├── .env                             ← Variables d'environnement (NE PAS commiter)
+    │                                      PORT, MONGO_URI, CLIENT_URL
+    ├── package.json                     ← Dépendances et scripts npm
+    ├── server.js                        ← Point d'entrée du serveur
+    │                                      (Express + CORS + connexion MongoDB)
+    │
+    ├── models/
+    │   └── Task.js                      ← Schéma Mongoose (title, description, status)
+    │                                      Validations : required, maxlength, enum
+    │
+    ├── controllers/
+    │   └── taskController.js            ← Logique métier (accès base de données)
+    │                                      getAllTasks | getTaskById | createTask
+    │                                      updateTaskStatus | deleteTask
+    │
+    └── routes/
+        └── taskRoutes.js                ← Définition des routes RESTful
+                                           GET / | GET /:id | POST / | PUT /:id | DELETE /:id
 ```
+
+---
 
 ## Prérequis
 
-- [Node.js](https://nodejs.org/) v18 ou supérieur
-- [MongoDB](https://www.mongodb.com/try/download/community) installé localement **ou** un compte [MongoDB Atlas](https://www.mongodb.com/atlas)
+| Outil | Version minimale | Lien |
+|-------|-----------------|------|
+| Node.js | v18+ | https://nodejs.org |
+| npm | v9+ | inclus avec Node.js |
+| MongoDB | v6+ | https://www.mongodb.com/try/download/community |
 
 ---
 
-## 1. Démarrer la base de données
+## Installation et démarrage
 
-### Option A — MongoDB local (MongoDB Compass)
-Lance MongoDB sur ton système (il tourne en général automatiquement).  
-Vérifie dans Compass que la connexion `mongodb://127.0.0.1:27017` fonctionne.
+> ⚠️ Il faut **deux terminaux ouverts en même temps** : un pour le serveur, un pour le client.
 
-### Option B — MongoDB Atlas (cloud)
-1. Crée un cluster gratuit sur [atlas.mongodb.com](https://www.mongodb.com/atlas)
-2. Copie ton URI de connexion et remplace `MONGO_URI` dans `server/.env`
-
----
-
-## 2. Démarrer le serveur Back-End
+### Étape 1 — Démarrer le serveur back-end (Terminal 1)
 
 ```bash
 cd server
-npm install          # installe express, mongoose, cors, dotenv, nodemon
-npm run dev          # démarre avec nodemon (redémarrage automatique)
+npm install
+npm run dev
 ```
 
-Le serveur écoute sur **http://localhost:5000**
-
-### Tester que le serveur fonctionne
+**Résultat attendu :**
 ```
-GET http://localhost:5000/api/ping
+✅ Connecté à MongoDB
+🚀 Serveur démarré sur http://localhost:5000
+```
+
+**Tester que le serveur fonctionne** (dans le navigateur) :
+```
+http://localhost:5000/api/ping
 → { "message": "Serveur TaskFlow operationnel" }
+
+http://localhost:5000/api/tasks
+→ []
 ```
 
 ---
 
-## 3. Démarrer le Front-End React
+### Étape 2 — Démarrer le front-end React (Terminal 2)
 
 ```bash
 cd client
@@ -56,25 +109,91 @@ npm install
 npm run dev
 ```
 
-L'interface est accessible sur **http://localhost:5173**
+**Résultat attendu :**
+```
+VITE v5.x  ready in xxx ms
+➜  Local:   http://localhost:5173/
+```
+
+Ouvre **http://localhost:5173** dans ton navigateur pour utiliser l'application.
 
 ---
 
 ## Routes API disponibles
 
-| Méthode | Route | Description |
-|---------|-------|-------------|
-| GET | `/api/ping` | Test serveur |
-| GET | `/api/tasks` | Lister toutes les tâches |
-| POST | `/api/tasks` | Créer une tâche |
-| PUT | `/api/tasks/:id` | Mettre à jour le statut |
-| DELETE | `/api/tasks/:id` | Supprimer une tâche |
+| Méthode | Route | Description | Code succès |
+|---------|-------|-------------|-------------|
+| `GET` | `/api/ping` | Test — vérifie que le serveur tourne | 200 |
+| `GET` | `/api/tasks` | Récupère toutes les tâches | 200 |
+| `GET` | `/api/tasks/:id` | Récupère une tâche par son ID | 200 |
+| `POST` | `/api/tasks` | Crée une nouvelle tâche | **201** |
+| `PUT` | `/api/tasks/:id` | Met à jour le statut d'une tâche | 200 |
+| `DELETE` | `/api/tasks/:id` | Supprime une tâche | 200 |
 
-### Exemple de body POST
+### Exemple — Créer une tâche (POST)
+
 ```json
+POST http://localhost:5000/api/tasks
+Content-Type: application/json
+
 {
   "title": "Conception de l'ontologie",
   "description": "Rédiger les axiomes de base.",
   "status": "A faire"
 }
 ```
+
+### Exemple — Mettre à jour le statut (PUT)
+
+```json
+PUT http://localhost:5000/api/tasks/<id>
+Content-Type: application/json
+
+{
+  "status": "En cours"
+}
+```
+
+Valeurs acceptées pour `status` : `"A faire"` · `"En cours"` · `"Termine"`
+
+---
+
+## Variables d'environnement (`server/.env`)
+
+```env
+PORT=5000
+MONGO_URI=mongodb://127.0.0.1:27017/taskflow
+CLIENT_URL=http://localhost:5173
+```
+
+> ⚠️ Ce fichier est dans `.gitignore` et ne doit jamais être poussé sur Git.
+
+---
+
+## Jalons du TP couverts
+
+| Jalon | Description | Points |
+|-------|-------------|--------|
+| Jalon 1 | Serveur Express + route `/api/ping` + variables `.env` 
+| Jalon 2 | Schéma Mongoose avec validations (`required`, `maxlength`, `enum`) 
+| Jalon 3 | Architecture MVC : contrôleurs + routes RESTful + `try/catch` 
+| Jalon 4 | Middlewares `express.json()` + CORS restreint à `localhost:5173` 
+| Jalon 5 | Intégration Full-Stack : `localStorage` remplacé par `fetch` API 
+
+---
+
+## Technologies utilisées
+
+**Front-End**
+- React 18 + Vite
+- React Router DOM
+- Fetch API (natif)
+
+**Back-End**
+- Node.js + Express
+- Mongoose (ODM MongoDB)
+- CORS + dotenv
+- nodemon (développement)
+
+**Base de données**
+- MongoDB (NoSQL)
