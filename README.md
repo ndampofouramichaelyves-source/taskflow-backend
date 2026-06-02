@@ -130,7 +130,7 @@ Ouvre **http://localhost:5173** dans ton navigateur pour utiliser l'application.
 | `PUT` | `/api/tasks/:id` | Met à jour le statut d'une tâche | 200 |
 | `DELETE` | `/api/tasks/:id` | Supprime une tâche | 200 |
 
-### Exemple — Créer une tâche (POST)
+### Exemple1 — Créer une tâche (POST)
 
 ```json
 POST http://localhost:5000/api/tasks
@@ -142,8 +142,12 @@ Content-Type: application/json
   "status": "A faire"
 }
 ```
+### Exemple2 — Vérifier les tâches présents  (GET)
 
-### Exemple — Mettre à jour le statut (PUT)
+```json
+http://localhost:5000/api/tasks
+```
+### Exemple3 — Mettre à jour le statut (PUT)
 
 ```json
 PUT http://localhost:5000/api/tasks/<id>
