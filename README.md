@@ -1,4 +1,4 @@
-# TaskFlow — Application ajoute du back end a celle du front end precedent 
+# TaskFlow — Application ajouté du back-end a celle du front end précédent 
 
 > TP Réalisé par NDAM POFOURA MICHAEL 
 
