@@ -7,9 +7,9 @@ import TaskForm from "../components/TaskForm";
 const API_URL = "http://localhost:5000/api/tasks";
 
 export default function Dashboard() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks]     = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError]     = useState(null);
 
   // Chargement des tâches au montage du composant (remplace useLocalStorage)
   useEffect(() => {
@@ -18,25 +18,18 @@ export default function Dashboard() {
         if (!res.ok) throw new Error("Erreur lors du chargement des tâches");
         return res.json();
       })
-      .then((data) => {
-        setTasks(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
+      .then((data) => { setTasks(data); setLoading(false); })
+      .catch((err) => { setError(err.message); setLoading(false); });
   }, []);
 
-  // Ajout d'une tâche via POST → n'ajoute dans le state QUE si statut 201
-  const handleAddTask = async ({ titre, description, statut }) => {
+  // Ajout via POST — insère dans le state UNIQUEMENT si réponse 201
+  const handleAddTask = async ({ title, description, status }) => {
     try {
       const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: titre, description, status: statut }),
+        body: JSON.stringify({ title, description, status }),
       });
-
       if (res.status === 201) {
         const newTask = await res.json();
         setTasks((prev) => [newTask, ...prev]);
@@ -52,16 +45,10 @@ export default function Dashboard() {
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px" }}>
       <div style={{ marginBottom: 40 }}>
-        <h1
-          style={{
-            fontFamily: "'Syne',sans-serif",
-            fontWeight: 700,
-            fontSize: 38,
-            letterSpacing: -1,
-            color: "#1a1a2e",
-            marginBottom: 8,
-          }}
-        >
+        <h1 style={{
+          fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 38,
+          letterSpacing: -1, color: "#1a1a2e", marginBottom: 8,
+        }}>
           Tableau de bord
         </h1>
         <p style={{ color: "#8b8fa8", fontSize: 15 }}>
@@ -71,61 +58,35 @@ export default function Dashboard() {
 
       <TaskForm onAddTask={handleAddTask} />
 
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 20,
-        }}
-      >
-        <span
-          style={{
-            fontFamily: "'Syne',sans-serif",
-            fontSize: 20,
-            fontWeight: 700,
-            color: "#1a1a2e",
-          }}
-        >
+      <div style={{
+        display: "flex", alignItems: "center",
+        justifyContent: "space-between", marginBottom: 20,
+      }}>
+        <span style={{
+          fontFamily: "'Syne',sans-serif", fontSize: 20,
+          fontWeight: 700, color: "#1a1a2e",
+        }}>
           Toutes les tâches
         </span>
-        <span
-          style={{
-            background: "rgba(99,91,255,0.08)",
-            color: "#635bff",
-            border: "1px solid rgba(99,91,255,0.2)",
-            borderRadius: 20,
-            padding: "3px 12px",
-            fontSize: 12,
-            fontWeight: 600,
-          }}
-        >
+        <span style={{
+          background: "rgba(99,91,255,0.08)", color: "#635bff",
+          border: "1px solid rgba(99,91,255,0.2)", borderRadius: 20,
+          padding: "3px 12px", fontSize: 12, fontWeight: 600,
+        }}>
           {tasks.length} tâche{tasks.length > 1 ? "s" : ""}
         </span>
       </div>
 
-      {/* États de chargement / erreur */}
-      {loading && (
-        <p style={{ color: "#8b8fa8", textAlign: "center", marginTop: 40 }}>
-          Chargement des tâches...
-        </p>
-      )}
-      {error && (
-        <p style={{ color: "#e03131", textAlign: "center", marginTop: 40 }}>
-          ⚠️ {error}
-        </p>
-      )}
+      {loading && <p style={{ color: "#8b8fa8", textAlign: "center", marginTop: 40 }}>Chargement des tâches...</p>}
+      {error   && <p style={{ color: "#e03131", textAlign: "center", marginTop: 40 }}>⚠️ {error}</p>}
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))",
-          gap: 18,
-        }}
-      >
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))",
+        gap: 18,
+      }}>
         {tasks.map((task) => (
-          // MongoDB utilise _id, on l'adapte pour le routeur React
-          <TaskCard key={task._id} task={{ ...task, id: task._id }} />
+          <TaskCard key={task._id} task={task} />
         ))}
       </div>
     </div>
